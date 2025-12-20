@@ -10,7 +10,13 @@
 
         <!-- Navigation Links -->
           <div class="hidden md:flex space-x-16 text-white font-medium text-lg">
-                  <a href="#" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Properti</a>
+                  @if(Auth::user()->role === 'karyawan')
+                      <a href="{{ route('properti.karyawan') }}" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Properti</a>
+                  @elseif(Auth::user()->role === 'client')
+                      <a href="{{ route('properti.client') }}" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Properti</a>
+                  @else
+                      <a href="{{ route('properti.karyawan') }}" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Properti</a>
+                  @endif
                   <a href="#" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Laporan</a>
                   <a href="#" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Obrolan</a>
                   <a href="#" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Setting</a>
