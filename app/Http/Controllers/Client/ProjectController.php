@@ -3,16 +3,19 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Project;
-use App\Models\ProjectDocument;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class ProjectController extends Controller
 {
+    public function create()
+    {
+        return view('modul.properti.client.tambah');
+    }
+
     public function store(Request $request)
     {
-        // SIMPAN PROJECT DULU (TANPA VALIDASI)
         $project = Project::create([
             'client_id'      => auth()->id(),
             'nama_project'   => $request->nama_project,
@@ -22,10 +25,8 @@ class ProjectController extends Controller
             'status'         => 'pending',
         ]);
 
-        // KALAU ADA FILE, SIMPAN
         if ($request->hasFile('documents')) {
             foreach ($request->file('documents') as $file) {
-
                 $path = Storage::disk('public')->putFile('documents', $file);
 
                 $project->documents()->create([
@@ -35,8 +36,7 @@ class ProjectController extends Controller
             }
         }
 
-        return redirect()
-            ->route('properti.client')
-            ->with('success', 'Dokumen berhasil dikirim');
+        return redirect()->route('properti.dokumen')
+            ->with('success', 'Dokumen berhasil ditambahkan');
     }
 }

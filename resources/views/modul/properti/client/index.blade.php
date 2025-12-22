@@ -82,10 +82,31 @@
                         <h3 class="text-xl font-bold text-gray-800">
                             Riwayat Project Terbaru
                         </h3>
-                        <span class="text-xs bg-green-100 text-green-700 px-3 py-1
-                                     rounded-full font-bold uppercase">
-                            Aktif
-                        </span>
+                        <div class="flex items-center gap-3">
+                            <!-- Status -->
+                            <span class="text-xs bg-green-100 text-green-700 px-3 py-1
+                                        rounded-full font-bold uppercase">
+                                Aktif
+                            </span>
+
+                            <!-- Tambah Project -->
+                                <a href="{{ route('client.projects.create') }}"
+                                class="inline-flex items-center gap-2
+                                        bg-[#82C17D] hover:bg-[#6cad67]
+                                        text-white text-xs font-bold
+                                        px-3 py-1 rounded-full
+                                        transition shadow">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="w-4 h-4" fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Tambah
+                                </a>
+
+                        </div>
                     </div>
 
                     <div class="overflow-x-auto">
@@ -111,25 +132,6 @@
                                             <div class="text-[11px] text-gray-400 italic">
                                                 ID: #PRO-{{ $project->id }}
                                             </div>
-
-                                            {{-- Dokumen --}}
-                                            @if ($project->documents->count())
-                                                <div class="mt-2 space-y-1">
-                                                    @foreach ($project->documents as $doc)
-                                                        <a
-                                                            href="{{ asset($doc->file_path) }}"
-                                                            target="_blank"
-                                                            class="block text-[11px] text-green-600 hover:underline"
-                                                        >
-                                                            📄 {{ $doc->nama_file }}
-                                                        </a>
-                                                    @endforeach
-                                                </div>
-                                            @else
-                                                <div class="mt-2 text-[11px] text-gray-400 italic">
-                                                    Belum ada dokumen
-                                                </div>
-                                            @endif
                                         </td>
 
                                         <td class="py-5">

@@ -17,6 +17,10 @@ class Project extends Model
         'status',
     ];
 
+    protected $casts = [
+        'contract_date' => 'date',
+    ];
+
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id');
