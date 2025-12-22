@@ -19,7 +19,11 @@ class PropertiController extends Controller
     public function client()
     {
         // Ambil project milik client yang login
-        $projects = Project::where('client_id', Auth::id())->latest()->take(10)->get();
+        $projects = Project::with('documents')
+        ->where('client_id', Auth::id())
+        ->latest()
+        ->take(10)
+        ->get();
 
         return view('modul.properti.client.index', compact('projects'));
     }
