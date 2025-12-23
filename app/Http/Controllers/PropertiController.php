@@ -40,9 +40,11 @@ public function fisik()
 {
     $role = auth()->user()->role;
     if ($role === 'karyawan') {
-        return view('modul.properti.karyawan.fisik');
+        $projects = Project::latest()->take(10)->get();
+        return view('modul.properti.karyawan.fisik', compact('projects'));
     } else {
-        return view('modul.properti.client.fisik');
+        $projects = Project::where('client_id', Auth::id())->latest()->take(10)->get();
+        return view('modul.properti.client.fisik', compact('projects'));
     }
 }
 
