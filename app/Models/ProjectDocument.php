@@ -10,6 +10,10 @@ class ProjectDocument extends Model
         'project_id',
         'nama_file',
         'file_path',
+        'status',
+        'notes',
+        'verified_by',
+        'verified_at',
     ];
 
     public function project()
