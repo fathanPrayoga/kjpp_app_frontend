@@ -4,15 +4,30 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\ProjectDocument;
 
 class Project extends Model
 {
-    // Kolom yang boleh diisi (Mass Assignment)
-    protected $fillable = ['client_id', 'nama_project', 'deskripsi', 'status'];
+    protected $fillable = [
+        'client_id',
+        'nama_project',
+        'contract_date',
+        'contact_person',
+        'deskripsi',
+        'status',
+    ];
 
-    // Relasi: Project ini dimiliki oleh Client
+    protected $casts = [
+        'contract_date' => 'date',
+    ];
+
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(ProjectDocument::class);
     }
 }
