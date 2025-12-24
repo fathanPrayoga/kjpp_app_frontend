@@ -72,21 +72,17 @@ class PropertiController extends Controller
         $role = auth()->user()->role;
 
         if ($role === 'karyawan') {
-            // Karyawan sees ALL projects
-            // We use 'with' to display the client name in the admin table
-            $projects = Project::with('client')->latest()->get();
-
+            $projects = Project::latest()->take(10)->get();
             return view('modul.properti.karyawan.fisik', compact('projects'));
-
-        } else {
-            // Client sees ONLY their own projects
-            $projects = Project::where('client_id', auth()->id())
-                ->latest()
-                ->get();
-
-            // Note: Make sure this view file exists!
-            return view('modul.properti.client.fisik', compact('projects'));
         }
+
+        $projects = Project::with('documents')
+            ->where('client_id', auth()->id())
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('modul.properti.client.fisik', compact('projects'));
     }
 
     // 2. MODULE PENILAIAN

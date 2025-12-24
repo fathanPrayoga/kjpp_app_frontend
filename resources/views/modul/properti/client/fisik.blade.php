@@ -65,21 +65,23 @@
                         <table class="w-full text-left">
                             <thead>
                                 <tr class="text-gray-400 text-sm border-b">
-                                    <th class="pb-4 font-semibold">Nama Client</th>
                                     <th class="pb-4 font-semibold">Nama Project</th>
+                                    <th class="pb-4 font-semibold">Status</th>
+                                    <th class="pb-4 font-semibold">Dokumen</th>
                                     <th class="pb-4 font-semibold">Waktu</th>
                                 </tr>
                             </thead>
                             <tbody class="text-sm">
                                 @forelse($projects as $project)
                                 <tr class="border-b last:border-0 hover:bg-gray-50 transition">
-                                    <td class="py-4 font-medium text-gray-800">{{ $project->client->name ?? 'Unknown Client' }}</td>
-                                    <td class="py-4 text-gray-600">{{ $project->nama_project ?? 'Project' }}</td>
+                                    <td class="py-4 font-medium text-gray-800">{{ $project->nama_project ?? 'Project' }}</td>
+                                    <td class="py-4 text-sm font-medium text-gray-700">{{ ucfirst($project->status ?? '-') }}</td>
+                                    <td class="py-4 text-gray-600">{{ $project->documents->count() ?? 0 }}</td>
                                     <td class="py-4 font-semibold text-gray-800">{{ $project->created_at->format('H.i') }}</td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="3" class="text-center py-8 text-gray-400 italic">Belum ada project.</td>
+                                    <td colspan="4" class="text-center py-8 text-gray-400 italic">Belum ada project.</td>
                                 </tr>
                                 @endforelse
                             </tbody>
