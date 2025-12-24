@@ -4,7 +4,7 @@
         <!-- Logo -->
         <div class="flex items-center">
             <a href="{{ route('dashboard') }}">
-                <img src="{{ asset('images/kjpp_logo.png') }}" alt="Logo" class="h-20 w-auto">
+                <img src="{{ asset('images/kjpp_logo.png') }}" alt="Logo" class="h-20 w-auto rounded-[35px]">
             </a>
         </div>
 

@@ -30,4 +30,9 @@ class Project extends Model
     {
         return $this->hasMany(ProjectDocument::class);
     }
+
+    public function nilai()
+    {
+        return $this->hasOne(Nilai::class, 'project_id');
+    }
 }
