@@ -44,6 +44,7 @@
                         </div>
                     </a>
                 </div>
+                
                 <!-- Area kanan -->
                 <div
                     class="lg:col-span-2 bg-white p-8 rounded-[40px] shadow-[0_20px_40px_rgba(0,0,0,0.04)] min-h-[400px] flex flex-col">

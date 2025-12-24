@@ -72,64 +72,68 @@
     </div>
 
     <!-- Modal Tahunan -->
-    <div id="tahunanModal"
-        class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
-        <div class="bg-white w-full max-w-md rounded-[30px] shadow-2xl overflow-hidden border border-gray-100 mx-4">
-            <div class="bg-[#82C17D] px-6 py-4 flex justify-between items-center">
-                <h3 id="modalYearTitle" class="text-gray-800 font-bold text-lg font-poppins">Laporan 2020</h3>
-                <button onclick="closeTahunanModal()" class="text-gray-700 hover:text-black">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+    <div id="tahunanModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+    <div class="bg-white w-full max-w-md rounded-[25px] shadow-2xl overflow-hidden mx-4">
+        
+        <div class="bg-[#82C17D] px-6 py-4 flex justify-between items-center text-white">
+            <h3 id="modalYearTitle" class="font-bold text-lg">Laporan 2020</h3>
+            <button onclick="closeTahunanModal()" class="hover:rotate-90 transition-transform">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+
+        <div id="fileListContainer" class="p-6 space-y-2 max-h-[300px] overflow-y-auto">
             </div>
 
-            <div id="fileListContainer" class="p-6 space-y-3 max-height-[400px] overflow-y-auto">
-            </div>
-
-            <div class="p-6 pt-0 text-center">
-                <button
-                    class="bg-[#82C17D] hover:bg-[#6ba867] text-white font-bold py-2.5 px-8 rounded-full transition-all text-sm">
-                    Unduh semua
-                </button>
-            </div>
+        <div class="p-6 pt-0 flex justify-end">
+            <a id="btnDownloadZip" href="#" class="hidden bg-[#82C17D] hover:bg-[#6ba867] text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-md transition-all">
+                Unduh semua
+            </a>
         </div>
     </div>
+</div>
 
     <script>
-        function openTahunanModal(year) {
-            // Pastikan URL fetch mengarah ke route yang baru kita buat
-            fetch(`/laporan/tahunan/${year}`)
-                .then(res => res.json())
-                .then(data => {
-                    document.getElementById('tahunanModal').classList.remove('hidden');
-                    document.getElementById('modalYearTitle').innerText = 'Laporan ' + data.tahun;
+    function openTahunanModal(year) {
+        const container = document.getElementById('fileListContainer');
+        const btnZip = document.getElementById('btnDownloadZip');
+        const modalTitle = document.getElementById('modalYearTitle');
 
-                    const container = document.getElementById('fileListContainer');
-                    container.innerHTML = '';
+        container.innerHTML = '<p class="text-center text-gray-400 py-4 italic">Memuat data...</p>';
+        btnZip.classList.add('hidden'); 
 
-                    if (data.files.length === 0) {
-                        container.innerHTML = '<p class="text-center text-gray-400">Tidak ada dokumen di tahun ini.</p>';
-                    }
+        fetch(`/laporan/tahunan/${year}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('tahunanModal').classList.remove('hidden');
+                modalTitle.innerText = 'Laporan ' + data.tahun;
+                container.innerHTML = '';
+
+                if (data.files && data.files.length > 0) {
+                    // MUNCULKAN TOMBOL SESUAI FIGMA
+                    btnZip.href = `/laporan/tahunan/download-zip/${year}`;
+                    btnZip.classList.remove('hidden'); 
 
                     data.files.forEach(project => {
                         container.innerHTML += `
-                    <div class="flex items-center justify-between py-3 border-b border-gray-50">
-                        <span class="text-sm text-gray-600 font-medium">${project.nama_project}.pdf</span>
-                        <a href="/storage/${project.dokumen}" target="_blank" class="text-[#82C17D] hover:underline">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                        </a>
-                    </div>
-                `;
+                            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                <span class="text-[15px] text-gray-800 font-semibold">${project.nama_project}.pdf</span>
+                                <a href="/storage/${project.dokumen}" target="_blank" class="text-gray-400 hover:text-[#82C17D] transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                    </svg>
+                                </a>
+                            </div>
+                        `;
                     });
-                });
-        }
+                } else {
+                    container.innerHTML = '<p class="text-center text-gray-400 py-10 font-medium">Belum ada file di tahun ini.</p>';
+                }
+            });
+    }
 
-        function closeTahunanModal() {
-            document.getElementById('tahunanModal').classList.add('hidden');
-        }
-    </script>
+    function closeTahunanModal() {
+        document.getElementById('tahunanModal').classList.add('hidden');
+    }
+</script>
 </x-app-layout>

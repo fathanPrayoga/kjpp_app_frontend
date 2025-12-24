@@ -14,11 +14,13 @@ class DatabaseSeeder extends Seeder
      * Seed the application's database.
      */
     public function run(): void
-{
-    // Memanggil UserSeeder untuk mengisi akun Karyawan, Client, dan Pekerja
-    $this->call([
-        UserSeeder::class,
-    ]);
+    {
+        // Memanggil UserSeeder untuk mengisi akun Karyawan, Client, dan Pekerja
+        $this->call([
+            UserSeeder::class,
+            ProjectSeeder::class,
+            NilaiSeeder::class,
+        ]);
 
     
     /*

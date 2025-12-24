@@ -4,16 +4,41 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\ProjectDocument;
+use App\Models\Nilai;
 
 class Project extends Model
 {
-    // Kolom yang boleh diisi (Mass Assignment)
-    protected $fillable = ['client_id', 'nama_project', 'deskripsi', 'status', 'asal_instansi','tanggal_mulai', 'dokumen'];
+    protected $fillable = [
+        'client_id', 
+        'nama_project', 
+        'contract_date', 
+        'contact_person', 
+        'deskripsi', 
+        'status', 
+        'asal_instansi',
+        'tanggal_mulai', 
+        'dokumen'
+    ];
 
-    // Relasi: Project ini dimiliki oleh Client
+    protected $casts = [
+        'contract_date' => 'date',
+        'tanggal_mulai' => 'datetime',
+        'created_at' => 'datetime',
+    ];
+
     public function client()
     {
-        
         return $this->belongsTo(User::class, 'client_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(ProjectDocument::class);
+    }
+
+    public function nilai()
+    {
+        return $this->hasOne(Nilai::class, 'project_id');
     }
 }

@@ -5,12 +5,12 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-[15px]">
                 <div class="bg-white p-8 rounded-[35px] shadow-[0_20px_40px_rgba(0,0,0,0.06)] flex items-center space-x-6 border border-gray-50">
-                    <div class="bg-[#82C17D] p-3 rounded-full text-white shadow-lg">
+                    <div class="bg-[#82C17D] p-3 rounded-[22px] text-white shadow-lg">
                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg">Properti</h3>
-                        <p class="text-gray-400 font-medium">{{ $stats['properti_count'] }} Project sedang dikelola</p>
+                        <p class="text-gray-400 font-medium">{{ $stats['properti_count'] ?? 0 }} Project sedang dikelola</p>
                     </div>
                 </div>
 
@@ -20,7 +20,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg">Laporan</h3>
-                        <p class="text-gray-400 font-medium">{{ $stats['laporan_count'] }} Laporan harus diselesaikan</p>
+                        <p class="text-gray-400 font-medium">{{ $stats['laporan_count'] ?? 0 }} Laporan harus diselesaikan</p>
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg">Obrolan</h3>
-                        <p class="text-gray-400 font-medium">{{ $stats['pesan_count'] }} pesan masuk</p>
+                        <p class="text-gray-400 font-medium">{{ $stats['pesan_count'] ?? 0 }} pesan masuk</p>
                     </div>
                 </div>
             </div>
@@ -53,7 +53,23 @@
                                     <td class="py-4 font-medium">{{ $index + 1 }}</td>
                                     <td class="py-4">Verifikasi dokumen Project {{ $project->client->name ?? 'User' }}</td>
                                     <td class="py-4">
-                                        <span class="bg-[#D1E7D0] text-[#4A7C47] px-4 py-1.5 rounded-full text-xs font-bold">Selesai</span>
+                                        @php
+                                            $status = strtolower($project->status ?? 'pending');
+                                            if (in_array($status, ['completed','selesai'])) {
+                                                $badgeClass = 'bg-[#D1E7D0] text-[#4A7C47]';
+                                                $label = 'Selesai';
+                                            } elseif ($status === 'pending') {
+                                                $badgeClass = 'bg-yellow-100 text-yellow-800';
+                                                $label = 'Pending';
+                                            } elseif (in_array($status, ['in_progress','proses','dalam_proses'])) {
+                                                $badgeClass = 'bg-blue-100 text-blue-800';
+                                                $label = 'Dalam Proses';
+                                            } else {
+                                                $badgeClass = 'bg-gray-100 text-gray-700';
+                                                $label = ucfirst($status);
+                                            }
+                                        @endphp
+                                        <span class="{{ $badgeClass }} px-4 py-1.5 rounded-full text-xs font-bold">{{ $label }}</span>
                                     </td>
                                 </tr>
                                 @empty
@@ -69,8 +85,8 @@
                         <h3 class="text-xl font-bold mb-4">Notifikasi</h3>
                         <div class="space-y-4">
                             <div class="flex items-center space-x-3 p-2 border-b border-gray-100 pb-3">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
-                                <span class="text-sm">pesan masuk</span>
+                                <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
+                                <span class="text-sm">{{ $stats['pesan_count'] ?? 0 }} pesan masuk</span>
                             </div>
                         </div>
                     </div>
@@ -81,8 +97,12 @@
                             @foreach($recentProjects as $project)
                             <div class="flex justify-between items-center border-b border-gray-50 pb-2 last:border-0">
                                 <span class="text-gray-600 font-medium truncate w-20">{{ $project->client->name ?? 'User' }}</span>
-                                <span class="text-gray-400 font-bold px-2">Project {{ $project->name }}</span>
-                                <span class="font-semibold text-gray-800">{{ $project->created_at->format('H.i') }}</span>
+                                <span class="text-gray-400 font-bold px-2 text-xs">Project {{ $project->name ?? $project->nama_project }}</span>
+                                
+                                {{-- PERBAIKAN KRUSIAL: Baris 101 --}}
+                                <span class="font-semibold text-gray-800">
+                                    {{ $project->created_at?->format('H.i') ?? '--.--' }}
+                                </span>
                             </div>
                             @endforeach
                         </div>
