@@ -29,7 +29,17 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/properti/penilaian', [PropertiController::class, 'penilaian'])
         ->name('properti.penilaian');
+        // Edit project (show form)
+        // Show project (view details)
+        Route::get('/projects/{project}', [\App\Http\Controllers\Client\ProjectController::class, 'show'])
+            ->name('projects.show');
 
+        // Edit project (show form)
+        Route::get('/projects/{project}/edit', [\App\Http\Controllers\Client\ProjectController::class, 'edit'])
+            ->name('projects.edit');
+        // Update project (PATCH/PUT)
+        Route::match(['put', 'patch'], '/projects/{project}', [\App\Http\Controllers\Client\ProjectController::class, 'update'])
+            ->name('projects.update');
     // ===== CLIENT PROJECT CRUD =====
     Route::prefix('client')->name('client.')->group(function () {
 
@@ -38,6 +48,8 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/projects', [ProjectController::class, 'store'])
             ->name('projects.store');
+
+
     });
 
     // ===== PROFILE =====

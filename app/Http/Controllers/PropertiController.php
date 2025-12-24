@@ -46,11 +46,20 @@ class PropertiController extends Controller
 
     public function fisik()
     {
-        return view(
-            auth()->user()->role === 'karyawan'
-                ? 'modul.properti.karyawan.fisik'
-                : 'modul.properti.client.fisik'
-        );
+        $role = auth()->user()->role;
+
+        if ($role === 'karyawan') {
+            $projects = Project::latest()->take(10)->get();
+            return view('modul.properti.karyawan.fisik', compact('projects'));
+        }
+
+        $projects = Project::with('documents')
+            ->where('client_id', auth()->id())
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('modul.properti.client.fisik', compact('projects'));
     }
 
     public function penilaian()

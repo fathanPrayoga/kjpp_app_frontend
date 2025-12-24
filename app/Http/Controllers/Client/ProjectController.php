@@ -39,4 +39,27 @@ class ProjectController extends Controller
         return redirect()->route('properti.dokumen')
             ->with('success', 'Dokumen berhasil ditambahkan');
     }
+
+    public function edit(Project $project)
+    {
+        return view('modul.properti.karyawan.fisik_edit', compact('project'));
+    }
+
+    public function show(Project $project)
+    {
+        return view('modul.properti.karyawan.fisik_show', compact('project'));
+    }
+
+    public function update(Request $request, Project $project)
+    {
+        $data = $request->validate([
+            'nama_project' => 'required|string|max:255',
+            'deskripsi'    => 'nullable|string',
+            'status'       => 'nullable|string|in:pending,proses,selesai',
+        ]);
+
+        $project->update($data);
+
+        return redirect()->route('properti.karyawan')->with('success', 'Project updated');
+    }
 }
