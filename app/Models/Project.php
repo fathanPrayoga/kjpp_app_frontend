@@ -5,20 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\ProjectDocument;
+use App\Models\Nilai;
 
 class Project extends Model
 {
     protected $fillable = [
-        'client_id',
-        'nama_project',
-        'contract_date',
-        'contact_person',
-        'deskripsi',
-        'status',
+        'client_id', 
+        'nama_project', 
+        'contract_date', 
+        'contact_person', 
+        'deskripsi', 
+        'status', 
+        'asal_instansi',
+        'tanggal_mulai', 
+        'dokumen'
     ];
 
     protected $casts = [
         'contract_date' => 'date',
+        'tanggal_mulai' => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     public function client()

@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use App\Models\Project;
+use App\Models\Nilai;
 use Illuminate\Support\Facades\Auth;
 
 class PropertiController extends Controller
 {
+    // ===== FUNGSI INDEX BERDASARKAN ROLE =====
+
     public function karyawan()
     {
         $projects = Project::latest()->take(10)->get();
@@ -24,49 +29,26 @@ class PropertiController extends Controller
         return view('modul.properti.client.index', compact('projects'));
     }
 
+    // ===== MODULE DOKUMEN =====
+
     public function dokumen()
     {
         $role = auth()->user()->role;
 
         if ($role === 'karyawan') {
-
             $projects = Project::latest()->get();
             return view('modul.properti.karyawan.dokumen', compact('projects'));
-
         } else {
-
             $projects = Project::with('documents')
                 ->where('client_id', auth()->id())
                 ->latest()
                 ->get();
-
             return view('modul.properti.client.dokumen', compact('projects'));
         }
     }
 
-    // public function fisik()
-    // {
-    //     return view(
-    //         auth()->user()->role === 'karyawan'
-    //             ? 'modul.properti.karyawan.fisik'
-    //             : 'modul.properti.client.fisik'
-    //     );
-    // }
+    // ===== MODULE FISIK =====
 
-    // public function penilaian()
-    // {
-    //     return view(
-    //         auth()->user()->role === 'karyawan'
-    //     // Ambil semua project dari client untuk karyawan lihat
-    //     $projects = Project::latest()->take(10)->get();
-    //             ? 'modul.properti.karyawan.penilaian', compact('projects')
-    //             // Ambil project milik client yang login
-    //     $projects = Project::where('client_id', Auth::id())->latest()->take(10)->get();
-    //     : 'modul.properti.client.penilaian'
-    //     , compact('projects'));
-    // }
-
-    // 1. MODULE FISIK
     public function fisik()
     {
         $role = auth()->user()->role;
@@ -85,32 +67,26 @@ class PropertiController extends Controller
         return view('modul.properti.client.fisik', compact('projects'));
     }
 
-    // 2. MODULE PENILAIAN
+    // ===== MODULE PENILAIAN =====
+
     public function penilaian()
     {
         $role = auth()->user()->role;
 
         if ($role === 'karyawan') {
-            // Karyawan sees ALL projects for valuation
             $projects = Project::with('client')->latest()->get();
-
             return view('modul.properti.karyawan.penilaian', compact('projects'));
-
         } else {
-            // Client sees ONLY their own valuation status
-            $projects = Project::where('client_id', auth()->id())
-                ->latest()
-                ->get();
-
-            // Note: Make sure this view file exists!
+            $projects = Project::where('client_id', auth()->id())->latest()->get();
             return view('modul.properti.client.penilaian', compact('projects'));
         }
     }
 
-    // Get nilai data for a specific project
+    // ===== LOGIKA PENILAIAN (JSON) =====
+
     public function getNilai($projectId)
     {
-        $nilai = \App\Models\Nilai::where('project_id', $projectId)->first();
+        $nilai = Nilai::where('project_id', $projectId)->first();
 
         if ($nilai) {
             return response()->json([
@@ -127,17 +103,14 @@ class PropertiController extends Controller
                 'nilai_per_m2_bangunan' => $nilai->nilai_per_m2_bangunan,
             ]);
         }
-
         return response()->json(['exists' => false]);
     }
 
-    // Save atau update nilai data
-    public function saveNilai(\Illuminate\Http\Request $request, $projectId)
+    public function saveNilai(Request $request, $projectId)
     {
-        $nilai = \App\Models\Nilai::where('project_id', $projectId)->first();
+        $nilai = Nilai::where('project_id', $projectId)->first();
         $selectedStatus = $request->input('status_penilaian');
 
-        // Check if trying to edit finalized nilai (sudah dinilai)
         if ($nilai && $nilai->status_penilaian?->value === 'sudah dinilai') {
             return response()->json([
                 'success' => false,
@@ -145,7 +118,6 @@ class PropertiController extends Controller
             ], 403);
         }
 
-        // Get all nilai fields
         $nilaiFields = [
             'nilai_pasar_final',
             'nilai_tanah',
@@ -157,7 +129,6 @@ class PropertiController extends Controller
             'nilai_per_m2_bangunan'
         ];
 
-        // Check if ANY nilai field has a value
         $hasAnyValue = false;
         foreach ($nilaiFields as $field) {
             if ($request->input($field)) {
@@ -166,20 +137,16 @@ class PropertiController extends Controller
             }
         }
 
-        // Determine final status based on values and selection
         if (!$hasAnyValue) {
-            // No values filled - stay belum dinilai
             $finalStatus = 'belum dinilai';
         } else if ($selectedStatus === 'sudah dinilai') {
-            // Any value filled AND user selected sudah dinilai - lock it
             $finalStatus = 'sudah dinilai';
         } else {
-            // Any value filled AND user selected sedang dinilai - save as sedang dinilai
             $finalStatus = 'sedang dinilai';
         }
 
         if (!$nilai) {
-            $nilai = new \App\Models\Nilai();
+            $nilai = new Nilai();
             $nilai->project_id = $projectId;
         }
 
@@ -189,7 +156,110 @@ class PropertiController extends Controller
         }
 
         $nilai->save();
-
         return response()->json(['success' => true]);
     }
+
+    // ===== MODULE LAPORAN =====
+    public function laporanProject()
+    {
+        $projects = Project::with('client')->latest()->get();
+        return view('modul.properti.laporan.project', compact('projects'));
+    }
+
+    public function getProject($id)
+    {
+        $project = Project::findOrFail($id);
+        return response()->json($project);
+    }
+
+    public function uploadLaporan(Request $request)
+    {
+        $request->validate([
+            'project_id' => 'required|exists:projects,id',
+            'asal_instansi' => 'nullable|string|max:255',
+            'tanggal_mulai' => 'nullable|date',
+            'file' => 'nullable|mimes:pdf|max:2048',
+        ]);
+
+        $project = Project::findOrFail($request->project_id);
+
+        // SIMPAN TEXT
+        $project->asal_instansi = $request->asal_instansi;
+        $project->tanggal_mulai = $request->tanggal_mulai;
+
+        // FILE
+        if ($request->hasFile('file')) {
+            if ($project->dokumen) {
+                Storage::disk('public')->delete($project->dokumen);
+            }
+
+            $project->dokumen = $request->file('file')
+                ->store('laporan_project', 'public');
+        }
+
+        $project->status = 'Selesai';
+        $project->save();
+
+        return back()->with('success', 'Laporan berhasil diperbarui');
+    }
+
+    public function laporanTahunan()
+    {
+        $years = Project::whereNotNull('tanggal_mulai')
+            ->selectRaw('YEAR(tanggal_mulai) as tahun')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->get();
+
+        return view('modul.properti.laporan.tahunan', compact('years'));
+    }
+
+    public function getTahunanByYear($year)
+    {
+        $projects = Project::whereYear('tanggal_mulai', $year)
+            ->whereNotNull('dokumen')
+            ->get();
+
+        return response()->json(['tahun' => $year, 'files' => $projects]);
+    }
+
+    public function deleteProject($id)
+    {
+        $project = Project::findOrFail($id);
+        if ($project->dokumen) {
+            Storage::disk('public')->delete($project->dokumen);
+        }
+        $project->delete();
+
+        return back()->with('success', 'Project dan laporan berhasil dihapus');
+    }
+    public function downloadZipTahunan($year)
+{
+    $projects = Project::whereYear('tanggal_mulai', $year)
+        ->whereNotNull('dokumen')
+        ->get();
+
+    if ($projects->isEmpty()) {
+        return back()->with('error', 'Tidak ada dokumen untuk diunduh pada tahun ini.');
+    }
+
+    $zipFileName = 'Laporan_Tahunan_' . $year . '.zip';
+    $zipFilePath = public_path($zipFileName); // Gunakan public_path
+    $zip = new \ZipArchive;
+
+    if ($zip->open($zipFilePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) === TRUE) {
+        foreach ($projects as $project) {
+            $filePath = storage_path('app/public/' . $project->dokumen);
+
+            if (file_exists($filePath)) {
+                // Gunakan nama project sebagai nama file di dalam ZIP
+                $namaFileDalamZip = str_replace(' ', '_', $project->nama_project) . '.pdf';
+                $zip->addFile($filePath, $namaFileDalamZip);
+            }
+        }
+        $zip->close();
+    }
+
+    return response()->download($zipFilePath)->deleteFileAfterSend(true);
+}
 }

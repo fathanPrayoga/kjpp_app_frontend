@@ -10,7 +10,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg">Properti</h3>
-                        <p class="text-gray-400 font-medium">{{ $stats['properti_count'] }} Project sedang dikelola</p>
+                        <p class="text-gray-400 font-medium">{{ $stats['properti_count'] ?? 0 }} Project sedang dikelola</p>
                     </div>
                 </div>
 
@@ -20,7 +20,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg">Laporan</h3>
-                        <p class="text-gray-400 font-medium">{{ $stats['laporan_count'] }} Laporan harus diselesaikan</p>
+                        <p class="text-gray-400 font-medium">{{ $stats['laporan_count'] ?? 0 }} Laporan harus diselesaikan</p>
                     </div>
                 </div>
 
@@ -30,7 +30,7 @@
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-800 text-lg">Obrolan</h3>
-                        <p class="text-gray-400 font-medium">{{ $stats['pesan_count'] }} pesan masuk</p>
+                        <p class="text-gray-400 font-medium">{{ $stats['pesan_count'] ?? 0 }} pesan masuk</p>
                     </div>
                 </div>
             </div>
@@ -85,8 +85,8 @@
                         <h3 class="text-xl font-bold mb-4">Notifikasi</h3>
                         <div class="space-y-4">
                             <div class="flex items-center space-x-3 p-2 border-b border-gray-100 pb-3">
-                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
-                                <span class="text-sm">pesan masuk</span>
+                                <svg class="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path></svg>
+                                <span class="text-sm">{{ $stats['pesan_count'] ?? 0 }} pesan masuk</span>
                             </div>
                         </div>
                     </div>
@@ -97,8 +97,12 @@
                             @foreach($recentProjects as $project)
                             <div class="flex justify-between items-center border-b border-gray-50 pb-2 last:border-0">
                                 <span class="text-gray-600 font-medium truncate w-20">{{ $project->client->name ?? 'User' }}</span>
-                                <span class="text-gray-400 font-bold px-2">Project {{ $project->name }}</span>
-                                <span class="font-semibold text-gray-800">{{ $project->created_at->format('H.i') }}</span>
+                                <span class="text-gray-400 font-bold px-2 text-xs">Project {{ $project->name ?? $project->nama_project }}</span>
+                                
+                                {{-- PERBAIKAN KRUSIAL: Baris 101 --}}
+                                <span class="font-semibold text-gray-800">
+                                    {{ $project->created_at?->format('H.i') ?? '--.--' }}
+                                </span>
                             </div>
                             @endforeach
                         </div>

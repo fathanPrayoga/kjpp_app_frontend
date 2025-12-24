@@ -75,7 +75,7 @@
                                 <tr class="border-b last:border-0 hover:bg-gray-50 transition">
                                     <td class="py-4 font-medium text-gray-800">{{ $project->client->name ?? 'Unknown Client' }}</td>
                                     <td class="py-4 text-gray-600">{{ $project->nama_project ?? 'Project' }}</td>
-                                    <td class="py-4 font-semibold text-gray-800">{{ $project->created_at->format('H.i') }}</td>
+                                    <td class="py-4 font-semibold text-gray-800">{{ $project->created_at?->format('d M Y') ?? 'Belum ada tanggal' }}</td>
                                 </tr>
                                 @empty
                                 <tr>
