@@ -30,6 +30,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/properti/penilaian', [PropertiController::class, 'penilaian'])
         ->name('properti.penilaian');
 
+    // ===== NILAI PENILAIAN =====
+    Route::get('/properti/nilai/{projectId}', [PropertiController::class, 'getNilai'])
+        ->name('properti.nilai.get');
+    
+    Route::post('/properti/nilai/{projectId}', [PropertiController::class, 'saveNilai'])
+        ->name('properti.nilai.save');
+
     // ===== CLIENT PROJECT CRUD =====
     Route::prefix('client')->name('client.')->group(function () {
 
