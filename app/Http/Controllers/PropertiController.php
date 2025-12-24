@@ -43,8 +43,6 @@ class PropertiController extends Controller
     }
 
     // ===== LAPORAN =====
-
-    // Menampilkan Daftar Project
     public function laporanProject()
     {
         $projects = Project::with('client')->latest()->get();
@@ -58,7 +56,7 @@ class PropertiController extends Controller
         return response()->json($project);
     }
 
-    // Proses Unggah/Update Laporan
+    // Proses Update Laporan
     public function uploadLaporan(Request $request)
     {
         $request->validate([

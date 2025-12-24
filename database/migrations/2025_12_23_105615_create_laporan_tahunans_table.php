@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('laporan_tahunans', function (Blueprint $table) {
             $table->id();
             $table->year('tahun');
-            $table->string('nama_file'); // Contoh: Laporan_GUS.pdf
+            $table->string('nama_file');
             $table->string('file_path');
             $table->timestamps();
         });
