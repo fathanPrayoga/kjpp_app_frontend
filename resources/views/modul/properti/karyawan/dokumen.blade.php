@@ -23,7 +23,7 @@
                     <div class="lg:col-span-1 space-y-6">
                         <!-- Dokumen Card -->
                         <a href="{{ route('properti.dokumen') }}" class="block">
-                            <div class="bg-white p-8 rounded-[35px] shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-shadow cursor-pointer border border-gray-50">
+                            <div class="bg-green-50 p-8 rounded-[35px] shadow-[0_20px_40px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.12)] transition-shadow cursor-pointer border border-gray-50 ring-2 ring-[#82C17D] ring-offset-2">
                                 <div class="flex items-center space-x-4">
                                     <div class="bg-[#82C17D] p-4 rounded-[22px] text-white shadow-lg">
                                         <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
