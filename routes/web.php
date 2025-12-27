@@ -6,6 +6,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PropertiController;
 use App\Http\Controllers\Client\ProjectController;
 use App\Http\Controllers\ProjectDocumentController;
+use App\Http\Controllers\UserController;
 
 Route::redirect('/', '/login');
 
@@ -48,6 +49,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // ===== CHAT =====
+    Route::get('/chats', function () { return view('chats.index'); })->name('chats.index');
+    Route::get('/users/search', [UserController::class, 'search'])->name('users.search');
+    Route::get('/messages/conversation/{user}', [\App\Http\Controllers\MessageController::class, 'conversation'])->name('messages.conversation');
+    Route::post('/messages', [\App\Http\Controllers\MessageController::class, 'store'])->name('messages.store');
+    Route::match(['put', 'patch'], '/messages/{message}', [\App\Http\Controllers\MessageController::class, 'update'])->name('messages.update');
+    Route::delete('/messages/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])->name('messages.destroy');
+    Route::post('/messages/conversation/{user}/read', [\App\Http\Controllers\MessageController::class, 'markRead'])->name('messages.markRead');
 });
 
 // Laporan

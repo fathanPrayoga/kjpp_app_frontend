@@ -19,7 +19,7 @@
                   @endif
                   
                   <a href="{{ route('laporan.project') }}" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Laporan </a>
-                  <a href="#" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Obrolan</a>
+                  <a href="{{ route('chats.index') }}" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Obrolan</a>
                   <a href="#" class="text-white no-underline hover:underline hover:decoration-blue-300 hover:decoration-2 hover:underline-offset-8 transition">Setting</a>
           </div>
 

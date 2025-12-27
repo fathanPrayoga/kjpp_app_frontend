@@ -59,4 +59,20 @@ class User extends Authenticatable
 
         return asset('images/profile-user.png');
     }
+
+    /**
+     * Messages sent by the user
+     */
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    /**
+     * Messages received by the user
+     */
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'recipient_id');
+    }
 }
